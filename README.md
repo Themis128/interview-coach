@@ -28,7 +28,7 @@ browser ──▶ Worker fetch()
 | Constant | Model | Deprecation status |
 |---|---|---|
 | `CHAT_MODEL` | `@cf/meta/llama-3.3-70b-instruct-fp8-fast` | ✅ supported |
-| `CHEAP_MODEL` | `@cf/meta/llama-4-scout-17b-16e-instruct` | ✅ supported |
+| `CHEAP_MODEL` (`/classify`) | `@cf/openai/gpt-oss-20b` | ✅ supported — llama-4-scout always answered CANDIDATE (fixed 2026-11-06) |
 | `EMBED` | `@cf/baai/bge-base-en-v1.5` | ✅ supported |
 | Flux STT | `@cf/deepgram/flux` | ✅ supported |
 | `/transcribe` chain | `@cf/deepgram/nova-3` → `whisper-large-v3-turbo` → `whisper` | ✅ all supported |
