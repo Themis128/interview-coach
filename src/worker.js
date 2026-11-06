@@ -75,10 +75,13 @@ export default {
 
     if (req.method === "POST" && url.pathname === "/tts") {
       const { text } = await req.json();
-      const res = await env.AI.run("@cf/myshell-ai/melotts", {
-        prompt: text, lang: "en", voice: "en-us",
+      // melotts deprecated 2026-11-20 -> Deepgram Aura-2; returns a ReadableStream of MPEG audio
+      const res = await env.AI.run("@cf/deepgram/aura-2-en", {
+        text, speaker: "luna", encoding: "mp3",
       });
-      const bin = Uint8Array.from(atob(res.audio || ""), c => c.charCodeAt(0));
+      if (res && typeof res.getReader === "function")
+        return new Response(res, { headers: { "content-type": "audio/mpeg" } });
+      const bin = Uint8Array.from(atob((res && res.audio) || ""), c => c.charCodeAt(0));
       return new Response(bin, { headers: { "content-type": "audio/mpeg" } });
     }
 
