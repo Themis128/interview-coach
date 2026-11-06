@@ -1,5 +1,5 @@
 const CHAT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
-const CHEAP_MODEL = "@cf/meta/llama-4-scout-17b-16e-instruct";
+const CHEAP_MODEL = "@cf/openai/gpt-oss-20b";
 const EMBED = "@cf/baai/bge-base-en-v1.5";
 const MAX_AUDIO_BYTES = 6 * 1024 * 1024;
 
@@ -94,9 +94,11 @@ INTERVIEWER examples: Tell me about yourself. How do you handle overfitting? Wha
 CANDIDATE examples: I choose deep learning. My day is good. I am an engineer. I handled it with dropout. Yes my name is Tom.` },
           { role: "user", content: text },
         ],
-        max_tokens: 5,
+        max_tokens: 300,
       });
-      const w = (res.response || "").toUpperCase();
+      const content = (res.choices && res.choices[0] && res.choices[0].message &&
+        res.choices[0].message.content) || res.response || "";
+      const w = content.toUpperCase();
       return json({ who: w.includes("INTERVIEWER") ? "interviewer" : "candidate" });
     }
 
