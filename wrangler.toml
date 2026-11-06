@@ -1,0 +1,27 @@
+name = "interview-coach"
+main = "src/worker.js"
+compatibility_date = "2025-10-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[ai]
+binding = "AI"
+
+[[d1_databases]]
+binding = "interview_db"
+database_name = "interview_db"
+database_id = "b00202a5-364d-4b99-a271-922ee897bb89"
+
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "cv-index"
+
+[[durable_objects.bindings]]
+name = "VOICE"
+class_name = "VoiceAgent"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["VoiceAgent"]
