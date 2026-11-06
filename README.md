@@ -32,31 +32,24 @@ browser ──▶ Worker fetch()
 | `EMBED` | `@cf/baai/bge-base-en-v1.5` | ✅ supported |
 | Flux STT | `@cf/deepgram/flux` | ✅ supported |
 | `/transcribe` chain | `@cf/deepgram/nova-3` → `whisper-large-v3-turbo` → `whisper` | ✅ all supported |
-| `/tts` | `@cf/myshell-ai/melotts` | ❌ **deprecated 2026-11-20** → replace with `@cf/deepgram/aura-2-en` |
+| `/tts` | `@cf/deepgram/aura-2-en` | ✅ migrated + deployed 2026-11-06 (was `melotts`) |
 
-## Pending fix: /tts melotts → aura-2-en
+## /tts migration: melotts → aura-2-en (done)
 
-Not a string swap — the APIs differ:
+Deployed 2026-11-06 (wrangler, version `c4e84fed`). The APIs differ — melotts
+took `prompt`/`lang`/`voice` and returned base64 `audio`; aura-2-en takes
+`text`/`speaker`/`encoding` and the binding returns a `ReadableStream` of MPEG
+audio (with a base64 `res.audio` fallback kept for safety):
 
 ```js
-// BEFORE (melotts): prompt/lang/voice → { audio: base64 }
-const res = await env.AI.run("@cf/myshell-ai/melotts", {
-  prompt: text, lang: "en", voice: "en-us",
-});
-const bin = Uint8Array.from(atob(res.audio || ""), c => c.charCodeAt(0));
-return new Response(bin, { headers: { "content-type": "audio/mpeg" } });
-
-// AFTER (aura-2-en): text/speaker → raw audio bytes
 const res = await env.AI.run("@cf/deepgram/aura-2-en", {
-  text, speaker: "luna",   // verify valid speaker IDs against current catalog
+  text, speaker: "luna", encoding: "mp3",
 });
-// aura-2 returns audio bytes directly — return as audio/mpeg or audio/wav per docs
-return new Response(res, { headers: { "content-type": "audio/mpeg" } });
+if (res && typeof res.getReader === "function")
+  return new Response(res, { headers: { "content-type": "audio/mpeg" } });
+const bin = Uint8Array.from(atob((res && res.audio) || ""), c => c.charCodeAt(0));
+return new Response(bin, { headers: { "content-type": "audio/mpeg" } });
 ```
-
-Verify the exact request/response contract against
-https://developers.cloudflare.com/workers-ai/models/aura-2-en/ before deploying —
-Deepgram Aura models stream audio and may need `encoding`/`sample_rate` params.
 
 ## Deploy
 
