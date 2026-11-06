@@ -95,6 +95,7 @@ CANDIDATE examples: I choose deep learning. My day is good. I am an engineer. I 
           { role: "user", content: text },
         ],
         max_tokens: 300,
+        temperature: 0,
       });
       const content = (res.choices && res.choices[0] && res.choices[0].message &&
         res.choices[0].message.content) || res.response || "";
