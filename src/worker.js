@@ -100,7 +100,11 @@ CANDIDATE examples: I choose deep learning. My day is good. I am an engineer. I 
       const content = (res.choices && res.choices[0] && res.choices[0].message &&
         res.choices[0].message.content) || res.response || "";
       const w = content.toUpperCase();
-      return json({ who: w.includes("INTERVIEWER") ? "interviewer" : "candidate" });
+      // gpt-oss-20b occasionally mislabels obvious questions; a trailing "?" is
+      // a deterministic interviewer signal in interview transcripts.
+      const isQuestion = /\?\s*$/.test(text.trim());
+      const who = isQuestion || w.includes("INTERVIEWER") ? "interviewer" : "candidate";
+      return json({ who });
     }
 
     if (req.method === "POST" && url.pathname === "/log") {
